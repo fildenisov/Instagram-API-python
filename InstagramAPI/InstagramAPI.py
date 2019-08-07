@@ -75,7 +75,7 @@ class InstagramAPI:
         self.s = requests.Session()
 
     def _generateRequestWithBoundaries(self, endpoint, data):
-        boundary = self.self.generateUUID(True)
+        boundary = self.generateUUID(True)
         m = MultipartEncoder(data, boundary=boundary)
         self.s.headers.update({'X-IG-Capabilities': '3Q4=',
                                'X-IG-Connection-Type': 'WIFI',
