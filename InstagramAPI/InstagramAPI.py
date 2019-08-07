@@ -430,7 +430,8 @@ class InstagramAPI:
             recipients = [str(recipients)]
         recipient_users = '"",""'.join(str(r) for r in recipients)
         endpoint = 'direct_v2/threads/broadcast/text/'
-        boundary = self.generateUUID(True)
+        self.uuid = self.generateUUID(True)
+        boundary = self.uuid
         bodies = [
             {
                 'type': 'form-data',
