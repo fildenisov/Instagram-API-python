@@ -74,7 +74,8 @@ class InstagramAPI:
         self.LastResponse = None
         self.s = requests.Session()
 
-    def _generateRequestWithBoundaries(self, endpoint, data, boundary):
+    def _generateRequestWithBoundaries(self, endpoint, data):
+        boundary = self.self.generateUUID(True)
         m = MultipartEncoder(data, boundary=boundary)
         self.s.headers.update({'X-IG-Capabilities': '3Q4=',
                                'X-IG-Connection-Type': 'WIFI',
@@ -429,7 +430,7 @@ class InstagramAPI:
             recipients = [str(recipients)]
         recipient_users = '"",""'.join(str(r) for r in recipients)
         endpoint = 'direct_v2/threads/broadcast/text/'
-        boundary = self.uuid
+        boundary = self.generateUUID(True)
         bodies = [
             {
                 'type': 'form-data',
@@ -482,7 +483,6 @@ class InstagramAPI:
             return False
 
     def direct_photo_by_url(self, url, recipients, upload_id=None):
-
         if type(recipients) != type([]):
             recipients = [str(recipients)]
         recipient_users = '"",""'.join(str(r) for r in recipients)
@@ -503,7 +503,7 @@ class InstagramAPI:
                       {'Content-Transfer-Encoding': 'binary'})
         }
 
-        return self._generateRequestWithBoundaries(endpoint, data, self.uuid)
+        return self._generateRequestWithBoundaries(endpoint, data)
 
     def direct_photo(self, photo, recipients, upload_id=None):
 
@@ -524,7 +524,7 @@ class InstagramAPI:
                       {'Content-Transfer-Encoding': 'binary'})
         }
 
-        return self._generateRequestWithBoundaries(endpoint, data, self.uuid)
+        return self._generateRequestWithBoundaries(endpoint, data)
 
     def direct_share(self, media_id, recipients, text=None):
         if not isinstance(position, list):
