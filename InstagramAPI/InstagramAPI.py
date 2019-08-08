@@ -27,8 +27,9 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 try:
     from moviepy.editor import VideoFileClip
-except ImportError:
+except Exception as e:
     print("Fail to import moviepy. Need only for Video upload.")
+
 
 # The urllib library was split into other modules from Python 2 to Python 3
 if sys.version_info.major == 3:
