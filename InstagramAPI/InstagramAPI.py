@@ -484,6 +484,73 @@ class InstagramAPI:
                 pass
             return False
 
+    def direct_link(self, text, recipients):
+        if type(recipients) != type([]):
+            recipients = [str(recipients)]
+        recipient_users = '"",""'.join(str(r) for r in recipients)
+        endpoint = 'direct_v2/threads/broadcast/link/'
+        self.uuid = self.generateUUID(True)
+        boundary = self.uuid
+        bodies = [
+            {
+                'type': 'form-data',
+                'name': 'recipient_users',
+                'data': '[["{}"]]'.format(recipient_users),
+            },
+            {
+                'type': 'form-data',
+                'name': 'client_context',
+                'data': self.uuid,
+            },
+            {
+                'type': 'form-data',
+                'name': 'thread',
+                'data': '["0"]',
+            },
+            {
+                'type': 'form-data',
+                'name': 'link_text',
+                'data': text or '',
+            },
+            {
+                'type': 'form-data',
+                'name': 'link_urls',
+                'data': '["{}"]'.format(text),
+            },
+            # {
+            #     'type': 'form-data',
+            #     'name': 'action',
+            #     'data': 'send_item',
+            # },
+        ]
+        data = self.buildBody(bodies, boundary)
+        self.s.headers.update(
+            {
+                'User-Agent': self.USER_AGENT,
+                'Proxy-Connection': 'keep-alive',
+                'Connection': 'keep-alive',
+                'Accept': '*/*',
+                'Content-Type': 'multipart/form-data; boundary={}'.format(boundary),
+                'Accept-Language': 'en-en',
+            }
+        )
+        # self.SendRequest(endpoint,post=data) #overwrites 'Content-type' header and boundary is missed
+        response = self.s.post(self.API_URL + endpoint, data=data.encode('utf-8'))
+
+        if response.status_code == 200:
+            self.LastResponse = response
+            self.LastJson = json.loads(response.text)
+            return True
+        else:
+            print("Request return " + str(response.status_code) + " error!")
+            # for debugging
+            try:
+                self.LastResponse = response
+                self.LastJson = json.loads(response.text)
+            except:
+                pass
+            return False
+
     def direct_photo_by_url(self, url, recipients, upload_id=None):
         if type(recipients) != type([]):
             recipients = [str(recipients)]
@@ -751,6 +818,10 @@ class InstagramAPI:
 
     def getv2Inbox(self):
         inbox = self.SendRequest('direct_v2/inbox/?')
+        return inbox
+
+    def getv2PendingInbox(self):
+        inbox = self.SendRequest('direct_v2/pending_inbox/?')
         return inbox
 
     def getv2Threads(self, thread, cursor=None):
